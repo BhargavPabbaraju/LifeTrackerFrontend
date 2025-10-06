@@ -9,144 +9,14 @@ import {
   Typography,
   Select,
   MenuItem,
-  OutlinedInput,
-  Chip,
   TextField,
   Button,
   Stack,
   Autocomplete,
 } from "@mui/material";
-
-const MONTHS = [
-  { label: "January", value: 1 },
-  { label: "February", value: 2 },
-  { label: "March", value: 3 },
-  { label: "April", value: 4 },
-  { label: "May", value: 5 },
-  { label: "June", value: 6 },
-  { label: "July", value: 7 },
-  { label: "August", value: 8 },
-  { label: "September", value: 9 },
-  { label: "October", value: 10 },
-  { label: "November", value: 11 },
-  { label: "December", value: 12 },
-];
-
-const DomainInput = ({ control, domains }) => (
-  <Controller
-    rules={{ required: "Domain is required" }}
-    name="domain"
-    control={control}
-    render={({ field: { onChange, value } }) => (
-      <Autocomplete
-        freeSolo
-        options={domains.map((d) => d.name)}
-        value={value || ""}
-        onChange={(_, newValue) => onChange(newValue)}
-        onInputChange={(_, newInput) => onChange(newInput)}
-        renderInput={(params) => (
-          <TextField {...params} label="Domain" margin="normal" />
-        )}
-      />
-    )}
-  />
-);
-
-const TagsInput = ({ control, tags }) => (
-  <Controller
-    name="tags"
-    control={control}
-    render={({ field: { onChange, value } }) => (
-      <Autocomplete
-        multiple
-        freeSolo
-        options={tags.map((tag) => tag.name)}
-        value={value || []}
-        onChange={(_, newValue) => onChange(newValue)}
-        renderInput={(params) => (
-          <TextField {...params} label="Tags" margin="normal" />
-        )}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip
-              sx={{ borderRadius: 0.5 }}
-              variant="outlined"
-              label={option}
-              color="primary"
-              {...getTagProps({ index })}
-            />
-          ))
-        }
-      />
-    )}
-  />
-);
-
-const MonthInput = ({ control }) => (
-  <Controller
-    control={control}
-    name="month"
-    render={({ field: { onChange, value, ...rest } }) => {
-      const selectedMonth = MONTHS.find((m) => m.value === value) || null;
-
-      return (
-        <Autocomplete
-          options={MONTHS}
-          getOptionLabel={(option) => option.label}
-          value={selectedMonth}
-          onChange={(_, newValue) => {
-            onChange(newValue.value ?? null);
-          }}
-          onInputChange={(_, inputValue, reason) => {
-            // If user types and presses Enter, match the typed string
-            if (reason === "input" || reason === "clear") return;
-
-            const match = MONTHS.find(
-              (m) => m.label.toLowerCase() === inputValue.toLowerCase()
-            );
-            if (match) onChange(match.value);
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Month" margin="normal" />
-          )}
-          {...rest}
-          autoHighlight
-          selectOnFocus
-          clearOnBlur
-        />
-      );
-    }}
-  />
-);
-
-const PeriodInputs = ({ control }) => {
-  const periods = ["year", "month", "week", "quarter"];
-  const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
-  return (
-    <>
-      {periods.map((period) => {
-        return period === "month" ? (
-          <MonthInput control={control} key={period} />
-        ) : (
-          <Controller
-            key={period}
-            name={period}
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label={capitalize(period)}
-                type="number"
-                fullWidth
-                margin="normal"
-              />
-            )}
-          />
-        );
-      })}
-    </>
-  );
-};
+import DomainInput from "./inputs/domain";
+import TagsInput from "./inputs/tags";
+import PeriodInputs from "./inputs/period";
 
 const DescriptionInput = ({ control }) => (
   <Controller
