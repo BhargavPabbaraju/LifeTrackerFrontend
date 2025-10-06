@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 // import { useTheme } from "@mui/material/styles";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Dialog, DialogContent } from "@mui/material";
+import GoalForm from "../forms/goals";
 
-function AddGoalButton() {
+function AddGoalButton({ ...props }) {
   //   const theme = useTheme();
   return (
-    <Button color="primary" variant="contained">
+    <Button color="primary" variant="contained" {...props}>
       Add goal
     </Button>
   );
@@ -14,6 +15,8 @@ function AddGoalButton() {
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState([]);
+  const [draftGoal, setDraftGoal] = useState(null);
+  const [addingGoal, setAddingGoal] = useState(false);
 
   useEffect(() => {
     api
@@ -22,11 +25,40 @@ export default function GoalsPage() {
       .catch((err) => console.error("Error fetching goals" + err));
   }, []);
 
+  const handleAddGoal = () => {
+    setAddingGoal(true);
+  };
+
+  const handleCloseForm = () => {
+    setAddingGoal(false);
+  };
+
+  const handleSaveGoal = (newGoal) => {
+    console.log(newGoal);
+    setAddingGoal(false);
+    setDraftGoal(null);
+  };
+
   return (
     <>
       {goals.length === 0 && <Typography>No goals found.</Typography>}
-      {/* {goals.length > 0 && <GoalsList />} */}
-      <AddGoalButton />
+      {/* {goals.length > 0 && <GoalsTable />} */}
+      <AddGoalButton onClick={handleAddGoal} />
+
+      <Dialog
+        open={addingGoal}
+        onClose={handleCloseForm}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          <GoalForm
+            initialData={draftGoal}
+            onSave={handleSaveGoal}
+            onCancel={handleCloseForm}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
