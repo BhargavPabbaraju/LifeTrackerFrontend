@@ -3,27 +3,28 @@ import { useForm, Controller } from "react-hook-form";
 import api, { API_ENDPOINTS } from "../api";
 import {
   CircularProgress,
-  FormControl,
-  InputLabel,
   Box,
   Typography,
-  Select,
-  MenuItem,
   TextField,
   Button,
   Stack,
-  Autocomplete,
 } from "@mui/material";
 import DomainInput from "./inputs/domain";
 import TagsInput from "./inputs/tags";
 import PeriodInputs from "./inputs/period";
+import GoalTypeInput from "./inputs/goal_type/goalType";
+
+const STEPS = {
+  GOAL: "Adding goal",
+  SCHEDULE: "Adding schedule",
+};
 
 const DescriptionInput = ({ control }) => (
   <Controller
     rules={{ required: "Description is required" }}
     name="description"
     control={control}
-    render={({ field }) => (
+    render={({ field, fieldState: { error } }) => (
       <TextField
         {...field}
         label="Description"
@@ -31,27 +32,9 @@ const DescriptionInput = ({ control }) => (
         rows={3}
         fullWidth
         margin="normal"
+        error={!!error}
+        helperText={error?.message}
       />
-    )}
-  />
-);
-
-const GoalTypeInput = ({ control, goalTypes }) => (
-  <Controller
-    rules={{ required: "Goal type is required" }}
-    name="goalType"
-    control={control}
-    render={({ field }) => (
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Goal Type</InputLabel>
-        <Select {...field} label="Goal Type">
-          {goalTypes.map((type) => (
-            <MenuItem key={type.name} value={type.name}>
-              {type.description}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
     )}
   />
 );
@@ -59,7 +42,7 @@ const GoalTypeInput = ({ control, goalTypes }) => (
 const FormButtons = ({ onCancel }) => (
   <Box sx={{ display: "flex", mt: 2, justifyContent: "flex-end", gap: 2 }}>
     <Button type="submit" variant="contained" color="primary" p={1}>
-      Add
+      Next
     </Button>
     <Button onClick={onCancel} variant="outlined" p={1}>
       Cancel
@@ -68,9 +51,16 @@ const FormButtons = ({ onCancel }) => (
 );
 
 //tags, onCancel, goalTypes,
-function Form({ initialData, domains, tags, goalTypes, onSave, onCancel }) {
+function Form({
+  initialData,
+  domains,
+  tags,
+  goalTypes,
+  onSave,
+  onCancel,
+  setGoalData,
+}) {
   const date = new Date();
-  // watch, setValue
   const { control, handleSubmit } = useForm({
     defaultValues: {
       domain: "",
@@ -87,6 +77,7 @@ function Form({ initialData, domains, tags, goalTypes, onSave, onCancel }) {
   });
 
   const onSubmit = (data) => {
+    setGoalData(data);
     onSave(data);
   };
 
@@ -104,7 +95,7 @@ function Form({ initialData, domains, tags, goalTypes, onSave, onCancel }) {
   );
 }
 
-export default function GoalForm({ initialData, onSave, onCancel }) {
+function GoalForm({ initialData, onSave, onCancel, setGoalData }) {
   const [domains, setDomains] = useState([]);
   const [tags, setTags] = useState([]);
   const [goalTypes, setGoalTypes] = useState([]);
@@ -176,6 +167,68 @@ export default function GoalForm({ initialData, onSave, onCancel }) {
       domains={domains}
       tags={tags}
       goalTypes={goalTypes}
+      setGoalData={setGoalData}
     />
+  );
+}
+
+function ScheduleForm({ goal, onSave, onBack }) {
+  return (
+    <Box>
+      <Typography variant="h6">
+        Add schedules for: {goal.description}
+      </Typography>
+
+      <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
+        <Button onClick={onBack} variant="outlined">
+          Back
+        </Button>
+        <Button variant="contained" onClick={() => onSave([])}>
+          Save
+        </Button>
+      </Box>
+    </Box>
+  );
+}
+
+export default function GoalDialog({
+  draftGoal,
+  setDraftGoal,
+  onSave,
+  onCancel,
+}) {
+  const [step, setStep] = useState(STEPS.GOAL);
+
+  const handleGoalNext = () => {
+    console.log(draftGoal);
+    setStep(STEPS.SCHEDULE);
+  };
+
+  const handleScheduleBack = () => setStep(STEPS.GOAL);
+
+  const handleFinalSave = (scheduleData) => {
+    const fullData = { ...draftGoal, schedules: scheduleData };
+    onSave(fullData);
+    setDraftGoal(null);
+  };
+
+  return (
+    <Box>
+      {step === STEPS.GOAL && (
+        <GoalForm
+          initialData={draftGoal}
+          onSave={handleGoalNext}
+          onCancel={onCancel}
+          setGoalData={setDraftGoal}
+        />
+      )}
+      {step === STEPS.SCHEDULE && (
+        <ScheduleForm
+          goal={draftGoal}
+          onSave={handleFinalSave}
+          onBack={handleScheduleBack}
+        />
+      )}
+    </Box>
   );
 }

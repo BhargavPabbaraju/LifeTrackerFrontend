@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../api";
-// import { useTheme } from "@mui/material/styles";
 import { Typography, Button, Dialog, DialogContent } from "@mui/material";
-import GoalForm from "../forms/goals";
+import GoalDialog from "../forms/goals";
 
 function AddGoalButton({ ...props }) {
-  //   const theme = useTheme();
   return (
     <Button color="primary" variant="contained" {...props}>
       Add goal
@@ -52,10 +50,11 @@ export default function GoalsPage() {
         fullWidth
       >
         <DialogContent>
-          <GoalForm
-            initialData={draftGoal}
+          <GoalDialog
+            draftGoal={draftGoal}
             onSave={handleSaveGoal}
             onCancel={handleCloseForm}
+            setDraftGoal={setDraftGoal}
           />
         </DialogContent>
       </Dialog>

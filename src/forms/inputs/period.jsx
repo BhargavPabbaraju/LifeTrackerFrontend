@@ -27,7 +27,10 @@ const MonthInput = ({ control, currentMonth }) => (
       required: "Month is required for this period type",
     }}
     defaultValue={currentMonth}
-    render={({ field: { onChange, value, ...rest }, fieldState }) => {
+    render={({
+      field: { onChange, value, ...rest },
+      fieldState: { error },
+    }) => {
       const selectedMonth = MONTHS.find((m) => m.value === value) || null;
 
       return (
@@ -53,8 +56,8 @@ const MonthInput = ({ control, currentMonth }) => (
               label="Month"
               margin="normal"
               fullWidth
-              error={!!fieldState?.error}
-              helperText={fieldState?.error?.message}
+              error={!!error}
+              helperText={error?.message}
             />
           )}
           {...rest}
@@ -75,15 +78,15 @@ const YearInput = ({ control, periodType, currentYear }) => (
     rules={{
       required: periodType ? "Year is required" : false,
     }}
-    render={({ field, fieldState }) => (
+    render={({ field, fieldState: { error } }) => (
       <TextField
         {...field}
         label="Year"
         type="number"
         fullWidth
         margin="normal"
-        error={!!fieldState?.error}
-        helperText={fieldState?.error?.message}
+        error={!!error}
+        helperText={error?.message}
       ></TextField>
     )}
   />
@@ -99,15 +102,15 @@ const QuarterInput = ({ control, currentQuarter }) => (
       min: { value: 1, message: "Quarter must be 1–4" },
       max: { value: 4, message: "Quarter must be 1–4" },
     }}
-    render={({ field, fieldState }) => (
+    render={({ field, fieldState: { error } }) => (
       <TextField
         {...field}
         label="Quarter (1-4)"
         type="number"
         fullWidth
         margin="normal"
-        error={!!fieldState?.error}
-        helperText={fieldState?.error?.message}
+        error={!!error}
+        helperText={error?.message}
       ></TextField>
     )}
   />
@@ -123,15 +126,15 @@ const WeekInput = ({ control, currentWeek }) => (
       min: { value: 1, message: "Week must be 1–5" },
       max: { value: 5, message: "Week must be 1–5" },
     }}
-    render={({ field, fieldState }) => (
+    render={({ field, fieldState: { error } }) => (
       <TextField
         {...field}
         label="Week (1-5)"
         type="number"
         fullWidth
         margin="normal"
-        error={!!fieldState?.error}
-        helperText={fieldState?.error?.message}
+        error={!!error}
+        helperText={error?.message}
       ></TextField>
     )}
   />
@@ -142,15 +145,15 @@ const PeriodTypeInput = ({ control }) => (
     control={control}
     name="periodType"
     rules={{ required: "Please select a period type" }}
-    render={({ field, fieldState }) => (
+    render={({ field, fieldState: { error } }) => (
       <TextField
         {...field}
         select
         label="Period Type"
         margin="normal"
         fullWidth
-        error={!!fieldState?.error}
-        helperText={fieldState?.error?.message}
+        error={!!error}
+        helperText={error?.message}
       >
         {PERIOD_TYPES.map((type) => (
           <MenuItem key={type} value={type}>
