@@ -9,10 +9,11 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import DomainInput from "./inputs/domain";
-import TagsInput from "./inputs/tags";
-import PeriodInputs from "./inputs/period";
-import GoalTypeInput from "./inputs/goal_type/goalType";
+import DomainInput from "./inputs/goal/domain";
+import TagsInput from "./inputs/goal/tags";
+import PeriodInputs from "./inputs/goal/period";
+import GoalTypeInput from "./inputs/goal/goal_type/goalType";
+import ScheduleForm from "./schedules";
 
 const STEPS = {
   GOAL: "Adding goal",
@@ -172,25 +173,6 @@ function GoalForm({ initialData, onSave, onCancel, setGoalData }) {
   );
 }
 
-function ScheduleForm({ goal, onSave, onBack }) {
-  return (
-    <Box>
-      <Typography variant="h6">
-        Add schedules for: {goal.description}
-      </Typography>
-
-      <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <Button onClick={onBack} variant="outlined">
-          Back
-        </Button>
-        <Button variant="contained" onClick={() => onSave([])}>
-          Save
-        </Button>
-      </Box>
-    </Box>
-  );
-}
-
 export default function GoalDialog({
   draftGoal,
   setDraftGoal,
@@ -200,7 +182,6 @@ export default function GoalDialog({
   const [step, setStep] = useState(STEPS.GOAL);
 
   const handleGoalNext = () => {
-    console.log(draftGoal);
     setStep(STEPS.SCHEDULE);
   };
 
