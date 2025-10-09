@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import DomainInput from "./inputs/goal/domain";
 import TagsInput from "./inputs/goal/tags";
-import PeriodInputs from "./inputs/goal/period";
+import PeriodInput from "./inputs/goal/goal_period/period";
 import GoalTypeInput from "./inputs/goal/goal_type/goalType";
 import ScheduleForm from "./schedules";
 
@@ -88,7 +88,7 @@ function Form({
         <DomainInput control={control} domains={domains} />
         <TagsInput control={control} tags={tags} />
       </Stack>
-      <PeriodInputs control={control} />
+      <PeriodInput control={control} />
       <DescriptionInput control={control} />
       <GoalTypeInput control={control} goalTypes={goalTypes} />
       <FormButtons control={control} onCancel={onCancel} />
