@@ -16,14 +16,13 @@ const MONTHS = [
   { label: "December", value: 12 },
 ];
 
-const MonthInput = ({ control, currentMonth }) => (
+const MonthInput = ({ control }) => (
   <Controller
     control={control}
     name="month"
     rules={{
       required: "Month is required for this period type",
     }}
-    defaultValue={currentMonth}
     render={({
       field: { onChange, value, ...rest },
       fieldState: { error },

@@ -5,18 +5,13 @@ import {
   Typography,
   FormHelperText,
 } from "@mui/material";
-import dayjs from "dayjs";
 import { Controller } from "react-hook-form";
-import { computeGoalRange } from "@/util/goal";
 import { useTheme } from "@mui/material/styles";
 
-function getDaysForGoalWeek(goal) {
-  const { startDate, endDate } = computeGoalRange(goal);
-  const start = dayjs(startDate);
-  const end = dayjs(endDate);
+function getDaysForGoalWeek(startDate, endDate) {
   const days = [];
-  let current = start;
-  while (current.isBefore(end) || current.isSame(end, "day")) {
+  let current = startDate;
+  while (current.isBefore(endDate) || current.isSame(endDate, "day")) {
     days.push({
       date: current.toISOString(),
       label: current.format("ddd D"),
@@ -26,8 +21,8 @@ function getDaysForGoalWeek(goal) {
   return days;
 }
 
-const WeeklyScheduleInput = ({ control, goal }) => {
-  const days = getDaysForGoalWeek(goal);
+const WeeklyScheduleInput = ({ control, startDate, endDate }) => {
+  const days = getDaysForGoalWeek(startDate, endDate);
   const theme = useTheme();
   return (
     <Controller

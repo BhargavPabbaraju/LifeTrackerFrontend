@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  FormProvider,
+  useFormContext,
+} from "react-hook-form";
 import api, { API_ENDPOINTS } from "../api";
 import {
   CircularProgress,
@@ -20,25 +25,28 @@ const STEPS = {
   SCHEDULE: "Adding schedule",
 };
 
-const DescriptionInput = ({ control }) => (
-  <Controller
-    rules={{ required: "Description is required" }}
-    name="description"
-    control={control}
-    render={({ field, fieldState: { error } }) => (
-      <TextField
-        {...field}
-        label="Description"
-        multiline
-        rows={3}
-        fullWidth
-        margin="normal"
-        error={!!error}
-        helperText={error?.message}
-      />
-    )}
-  />
-);
+const DescriptionInput = () => {
+  const { control } = useFormContext();
+  return (
+    <Controller
+      rules={{ required: "Description is required" }}
+      name="description"
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <TextField
+          {...field}
+          label="Description"
+          multiline
+          rows={3}
+          fullWidth
+          margin="normal"
+          error={!!error}
+          helperText={error?.message}
+        />
+      )}
+    />
+  );
+};
 
 const FormButtons = ({ onCancel }) => (
   <Box sx={{ display: "flex", mt: 2, justifyContent: "flex-end", gap: 2 }}>
@@ -62,20 +70,21 @@ function Form({
   setGoalData,
 }) {
   const date = new Date();
-  const { control, handleSubmit } = useForm({
+  const methods = useForm({
     defaultValues: {
       domain: "",
       tags: [],
       year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      week: null,
-      quarter: null,
+      month: undefined,
+      week: undefined,
+      quarter: undefined,
       description: "",
       goalType: "",
       goalData: {},
       ...initialData,
     },
   });
+  const { handleSubmit } = methods;
 
   const onSubmit = (data) => {
     setGoalData(data);
@@ -83,16 +92,18 @@ function Form({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2}>
-        <DomainInput control={control} domains={domains} />
-        <TagsInput control={control} tags={tags} />
-      </Stack>
-      <PeriodInput control={control} />
-      <DescriptionInput control={control} />
-      <GoalTypeInput control={control} goalTypes={goalTypes} />
-      <FormButtons control={control} onCancel={onCancel} />
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack spacing={2}>
+          <DomainInput domains={domains} />
+          <TagsInput tags={tags} />
+        </Stack>
+        <PeriodInput />
+        <DescriptionInput />
+        <GoalTypeInput goalTypes={goalTypes} />
+        <FormButtons onCancel={onCancel} />
+      </form>
+    </FormProvider>
   );
 }
 

@@ -36,13 +36,12 @@ function getWeeksInAMonth(month, year) {
   return weeks; // Weeks always start from 1st of Month and go in 7 day chunks
 }
 
-const WeekInput = ({ control, currentWeek, month, year }) => {
+const WeekInput = ({ control, month, year }) => {
   const weeksInMonth = getWeeksInAMonth(month, year);
   const theme = useTheme();
   return (
     <Controller
       control={control}
-      defaultValue={currentWeek}
       name="week"
       rules={{
         required: "Week is required for weekly goals",

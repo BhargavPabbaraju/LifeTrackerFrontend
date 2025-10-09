@@ -1,4 +1,4 @@
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import {
   FormControl,
   InputLabel,
@@ -83,7 +83,8 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
   );
 };
 
-const GoalTypeInput = ({ control, goalTypes }) => {
+const GoalTypeInput = ({ goalTypes }) => {
+  const { control } = useFormContext();
   const [selectedGoalType, setSelectedGoalType] = useState(null);
   return (
     <>

@@ -1,10 +1,11 @@
-import { Controller, useWatch } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { TextField, MenuItem, Box } from "@mui/material";
 import MonthInput from "./month";
 import QuarterInput from "./quarter";
 import YearInput from "./year";
 import WeekInput from "./week";
-import { PERIOD_TYPE_ORDER } from "@/util/goal";
+import { PERIOD_TYPE_ORDER, PERIOD_TYPES } from "@/util/goal";
+import { useEffect } from "react";
 
 const PeriodTypeInput = ({ control }) => (
   <Controller
@@ -31,7 +32,8 @@ const PeriodTypeInput = ({ control }) => (
   />
 );
 
-const PeriodInput = ({ control }) => {
+const PeriodInput = () => {
+  const { control, setValue } = useFormContext();
   const periodType = useWatch({ control, name: "periodType" });
   const month = useWatch({ control, name: "month" });
   const year = useWatch({ control, name: "year" });
@@ -42,37 +44,40 @@ const PeriodInput = ({ control }) => {
     quarter: periodType === "Quarterly",
   };
 
-  const date = new Date();
-  const currentMonth = date.getMonth() + 1;
-  const currentYear = date.getFullYear();
-  const currentQuarter = Math.floor(date.getMonth() / 3) + 1;
-  const startWeekDay = new Date(currentYear, currentMonth, 1).getDay();
-  const currentWeek = Math.min(
-    Math.ceil((date.getDate() + startWeekDay) / 7),
-    5
-  );
+  useEffect(() => {
+    if (!periodType) return;
+    setValue("month", undefined);
+    setValue("quarter", undefined);
+    setValue("week", undefined);
+
+    const date = new Date();
+    const currentMonth = date.getMonth() + 1;
+    const currentYear = date.getFullYear();
+    const currentQuarter = Math.floor(date.getMonth() / 3) + 1;
+    const startWeekDay = new Date(currentYear, currentMonth, 1).getDay();
+    const currentWeek = Math.min(
+      Math.ceil((date.getDate() + startWeekDay) / 7),
+      5
+    );
+
+    if (periodType === PERIOD_TYPES.WEEKLY) {
+      setValue("month", currentMonth);
+      setValue("week", currentWeek);
+    } else if (periodType === PERIOD_TYPES.MONTHLY) {
+      setValue("month", currentMonth);
+    } else if (periodType === PERIOD_TYPES.QUARTERLY) {
+      setValue("quarter", currentQuarter);
+    }
+  }, [periodType, setValue]);
 
   return (
     <Box>
       <PeriodTypeInput control={control} />
-      <YearInput
-        control={control}
-        periodType={periodType}
-        currentYear={currentYear}
-      />
-      {shouldShow.month && (
-        <MonthInput control={control} currentMonth={currentMonth} />
-      )}
-      {shouldShow.quarter && (
-        <QuarterInput control={control} currentQuarter={currentQuarter} />
-      )}
+      <YearInput control={control} periodType={periodType} />
+      {shouldShow.month && <MonthInput control={control} />}
+      {shouldShow.quarter && <QuarterInput control={control} />}
       {shouldShow.week && (
-        <WeekInput
-          control={control}
-          currentWeek={currentWeek}
-          month={month}
-          year={year}
-        />
+        <WeekInput control={control} month={month} year={year} />
       )}
     </Box>
   );

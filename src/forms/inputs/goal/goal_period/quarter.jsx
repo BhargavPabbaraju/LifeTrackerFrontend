@@ -1,10 +1,9 @@
 import { Controller } from "react-hook-form";
 import { TextField } from "@mui/material";
 
-const QuarterInput = ({ control, currentQuarter }) => (
+const QuarterInput = ({ control }) => (
   <Controller
     control={control}
-    defaultValue={currentQuarter}
     name="quarter"
     rules={{
       required: "Quarter is required for quarterly goals",

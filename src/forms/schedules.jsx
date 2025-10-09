@@ -3,7 +3,7 @@ import { useForm, useWatch } from "react-hook-form";
 import TimingsInput from "./inputs/schedule/timings";
 import CalendarInput from "./inputs/schedule/calendar";
 import WeeklyScheduleInput from "./inputs/schedule/weekly";
-import { PERIOD_TYPES } from "@/util/goal";
+import { computeGoalRange, PERIOD_TYPES } from "@/util/goal";
 
 const FormButtons = ({ onBack }) => (
   <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
@@ -27,6 +27,7 @@ export default function ScheduleForm({ goal, onSave, onBack }) {
     },
   });
   const selectedDates = useWatch({ control, name: "days" }) || [];
+  const { startDate, endDate } = computeGoalRange(goal);
   const onSubmit = (data) => {
     const schedules = data.sameTimings
       ? (data.days || []).map((iso) => ({
@@ -52,9 +53,17 @@ export default function ScheduleForm({ goal, onSave, onBack }) {
         </Typography>
 
         {goal.periodType === PERIOD_TYPES.WEEKLY ? (
-          <WeeklyScheduleInput control={control} goal={goal} />
+          <WeeklyScheduleInput
+            control={control}
+            startDate={startDate}
+            endDate={endDate}
+          />
         ) : (
-          <CalendarInput control={control} goal={goal} />
+          <CalendarInput
+            control={control}
+            startDate={startDate}
+            endDate={endDate}
+          />
         )}
 
         <TimingsInput control={control} dates={selectedDates} />

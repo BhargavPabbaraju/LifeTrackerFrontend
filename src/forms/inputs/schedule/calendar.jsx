@@ -1,9 +1,9 @@
+import { PERIOD_TYPES } from "@/util/goal";
 import { Box } from "@mui/material";
 import { DateCalendar, PickersDay } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
 import { Controller } from "react-hook-form";
 
-const CalendarInput = ({ control, goal }) => {
+const CalendarInput = ({ control, startDate, endDate }) => {
   const handleChange = (newValue, field) => {
     if (!newValue) return;
 
@@ -32,15 +32,23 @@ const CalendarInput = ({ control, goal }) => {
             <DateCalendar
               value={null}
               views={["day"]}
-              minDate={dayjs(`${goal?.year}-${goal?.month || 1}-01`)}
-              maxDate={
-                goal?.month
-                  ? dayjs(`${goal?.year}-${goal?.month}-01`).endOf("month")
-                  : dayjs(`${goal?.year}-12-31`)
-              }
+              minDate={startDate}
+              maxDate={endDate}
               onChange={(newValue) => {
                 handleChange(newValue, field);
               }}
+              slotProps={{
+                layout: {
+                  sx: {
+                    "& .MuiDayCalendar-weekDayLabel": {
+                      color: "red",
+                      backgroundColor: "blue",
+                    },
+                  },
+                },
+              }}
+              disableFuture={false}
+              disablePast={true}
               slots={{
                 day: (dayProps) => {
                   const isSelected = field.value.includes(
@@ -51,25 +59,57 @@ const CalendarInput = ({ control, goal }) => {
                       {...dayProps}
                       selected={isSelected}
                       sx={{
-                        width: 44,
-                        height: 44,
                         fontSize: "1rem",
+                        borderRadius: 1,
                         bgcolor: isSelected ? "primary.main" : undefined,
                         color: isSelected ? "white" : undefined,
-                        borderRadius: "50%",
+                        "&:not(.Mui-selected)": {
+                          "&:hover": { bgcolor: "action.hover" },
+                        },
                       }}
                     />
                   );
                 },
               }}
               sx={{
-                maxWidth: 420, // keeps it neat, wider than default
+                maxWidth: 420,
+                "& .MuiDayCalendar-weekDayLabelContainer": {
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  textAlign: "center",
+                  fontWeight: 600,
+                  mb: 0.5,
+                  px: 0,
+                  mx: 0,
+                },
+                "& .MuiDayCalendar-weekDayLabel": {
+                  color: "text.secondary",
+                  fontSize: "0.875rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.03em",
+                  lineHeight: 1.2,
+                },
+                "& .MuiDayCalendar-weekContainer": {
+                  padding: 0,
+                  margin: 0,
+                },
+                "& .MuiDayCalendar-week": {
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  columnGap: 0,
+                  margin: 0,
+                },
                 "& .MuiPickersDay-root": {
-                  fontSize: "1rem",
+                  margin: 0,
+                  width: "100%",
+                  maxWidth: "unset",
+                  aspectRatio: "1",
+                  justifySelf: "stretch",
+                  alignSelf: "stretch",
                 },
                 "& .MuiPickersCalendarHeader-root": {
-                  fontSize: "1rem",
                   justifyContent: "center",
+                  fontSize: "1rem",
                 },
               }}
             />
