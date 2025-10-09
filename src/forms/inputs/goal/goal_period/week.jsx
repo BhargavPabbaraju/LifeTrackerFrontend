@@ -14,24 +14,26 @@ function getWeeksInAMonth(month, year) {
   const endOfMonth = startOfMonth.endOf("month");
 
   let weeks = [];
-  let current = startOfMonth.startOf("week");
+  let current = startOfMonth;
   while (current.isBefore(endOfMonth) || current.isSame(endOfMonth, "day")) {
-    const weekStart = current.isBefore(startOfMonth) ? startOfMonth : current;
-    const weekEnd = current.endOf("week").isAfter(endOfMonth)
+    const weekStart = current;
+    const weekEnd = current.add(6, "day").isAfter(endOfMonth)
       ? endOfMonth
-      : current.endOf("week");
+      : current.add(6, "day");
 
     weeks.push({
-      label: `W${weeks.length + 1}: ${weekStart.format(
-        "ddd D"
-      )} - ${weekEnd.format("ddd D")}`, // Mon 10 – Sun 16
-      value: weekStart.week(),
+      label: weekStart.isSame(weekEnd, "day")
+        ? `W${weeks.length + 1}: ${weekStart.format("ddd D")}`
+        : `W${weeks.length + 1}: ${weekStart.format(
+            "ddd D"
+          )} - ${weekEnd.format("ddd D")}`, // Mon 10 – Sun 16
+      value: weeks.length + 1,
     });
 
-    current = current.add(1, "week");
+    current = current.add(7, "day");
   }
 
-  return weeks;
+  return weeks; // Weeks always start from 1st of Month and go in 7 day chunks
 }
 
 const WeekInput = ({ control, currentWeek, month, year }) => {
@@ -55,9 +57,9 @@ const WeekInput = ({ control, currentWeek, month, year }) => {
             value={field.value}
             onChange={(_, newValue) => {
               field.onChange(newValue);
-              field.onBlur();
+              //field.onBlur();
             }}
-            onBlur={field.onBlur}
+            // onBlur={field.onBlur}
             sx={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",

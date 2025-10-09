@@ -71,9 +71,9 @@ const TimingsInput = ({ control, dates }) => {
 
   return (
     <Box sx={{ mt: 2 }}>
-      <SameTimingsToggle control={control} />
+      {dates.length > 1 && <SameTimingsToggle control={control} />}
 
-      {sameTimings ? (
+      {sameTimings || dates.length === 1 ? (
         <TimeRow control={control} />
       ) : (
         <Box sx={{ mt: 2 }}>

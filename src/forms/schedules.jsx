@@ -2,6 +2,8 @@ import { Box, Typography, Button } from "@mui/material";
 import { useForm, useWatch } from "react-hook-form";
 import TimingsInput from "./inputs/schedule/timings";
 import CalendarInput from "./inputs/schedule/calendar";
+import WeeklyScheduleInput from "./inputs/schedule/weekly";
+import { PERIOD_TYPES } from "@/util/goal";
 
 const FormButtons = ({ onBack }) => (
   <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
@@ -49,7 +51,12 @@ export default function ScheduleForm({ goal, onSave, onBack }) {
           Add schedule for: {goal?.description}
         </Typography>
 
-        <CalendarInput control={control} goal={goal} />
+        {goal.periodType === PERIOD_TYPES.WEEKLY ? (
+          <WeeklyScheduleInput control={control} goal={goal} />
+        ) : (
+          <CalendarInput control={control} goal={goal} />
+        )}
+
         <TimingsInput control={control} dates={selectedDates} />
         <FormButtons onBack={onBack} />
       </Box>

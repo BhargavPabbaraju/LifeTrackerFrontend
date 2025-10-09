@@ -4,8 +4,7 @@ import MonthInput from "./month";
 import QuarterInput from "./quarter";
 import YearInput from "./year";
 import WeekInput from "./week";
-
-const PERIOD_TYPES = ["Weekly", "Monthly", "Quarterly", "Yearly"];
+import { PERIOD_TYPE_ORDER } from "@/util/goal";
 
 const PeriodTypeInput = ({ control }) => (
   <Controller
@@ -22,7 +21,7 @@ const PeriodTypeInput = ({ control }) => (
         error={!!error}
         helperText={error?.message}
       >
-        {PERIOD_TYPES.map((type) => (
+        {PERIOD_TYPE_ORDER.map((type) => (
           <MenuItem key={type} value={type}>
             {type}
           </MenuItem>
