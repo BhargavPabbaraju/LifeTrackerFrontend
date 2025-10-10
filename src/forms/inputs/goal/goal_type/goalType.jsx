@@ -1,4 +1,4 @@
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import {
   FormControl,
   InputLabel,
@@ -8,13 +8,15 @@ import {
   Box,
   FormHelperText,
 } from "@mui/material";
-import { useState } from "react";
 import NumberInput from "./number";
 import BooleanInput from "./boolean";
 import SelectInput from "./select";
 import TextInput from "./text";
 
-const GoalTypeDataInputs = ({ control, goalType }) => {
+const GoalTypeDataInputs = () => {
+  const { control } = useFormContext();
+  const goalType = useWatch({ control, name: "goalType" });
+
   if (
     !goalType ||
     !goalType?.requiredGoalData ||
@@ -24,18 +26,19 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
     return null;
   }
 
-  const renderField = (key, config) => {
+  const renderField = (fieldKey, config) => {
     const type = config.type || "text";
     const label =
       config.label ||
-      key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      fieldKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
     switch (type) {
       case "number":
         return (
           <NumberInput
+            key={fieldKey}
             control={control}
-            key={key}
+            fieldKey={fieldKey}
             config={config}
             label={label}
           />
@@ -44,8 +47,9 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
       case "boolean":
         return (
           <BooleanInput
+            key={fieldKey}
             control={control}
-            key={key}
+            fieldKey={fieldKey}
             config={config}
             label={label}
           />
@@ -53,8 +57,9 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
       case "select":
         return (
           <SelectInput
+            key={fieldKey}
             control={control}
-            key={key}
+            fieldKey={fieldKey}
             config={config}
             label={label}
           />
@@ -62,8 +67,9 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
       default:
         return (
           <TextInput
+            key={fieldKey}
             control={control}
-            key={key}
+            fieldKey={fieldKey}
             config={config}
             label={label}
           />
@@ -76,8 +82,8 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
         Additional Goal Details
       </Typography>
-      {Object.entries(goalType.requiredGoalData).map(([key, config]) =>
-        renderField(key, config)
+      {Object.entries(goalType.requiredGoalData).map(([fieldKey, config]) =>
+        renderField(fieldKey, config)
       )}
     </Box>
   );
@@ -85,7 +91,6 @@ const GoalTypeDataInputs = ({ control, goalType }) => {
 
 const GoalTypeInput = ({ goalTypes }) => {
   const { control } = useFormContext();
-  const [selectedGoalType, setSelectedGoalType] = useState(null);
   return (
     <>
       <Controller
@@ -96,13 +101,21 @@ const GoalTypeInput = ({ goalTypes }) => {
           <FormControl fullWidth margin="normal" error={!!error}>
             <InputLabel>Goal Type</InputLabel>
             <Select
-              {...field}
+              value={field.value?.name || undefined}
               label="Goal Type"
+              onBlur={field.onBlur}
+              name={field.name}
+              inputRef={field.ref}
               onChange={(e) => {
-                field.onChange(e);
-                setSelectedGoalType(
-                  goalTypes.find((t) => t.name === e.target.value)
+                console.log(
+                  "GoalType field.value =",
+                  field.value,
+                  field.value?.name
                 );
+                const selected = goalTypes.find(
+                  (t) => t.name === e.target.value
+                );
+                field.onChange(selected);
               }}
             >
               {goalTypes.map((type) => (
@@ -115,7 +128,7 @@ const GoalTypeInput = ({ goalTypes }) => {
           </FormControl>
         )}
       />
-      <GoalTypeDataInputs control={control} goalType={selectedGoalType} />
+      <GoalTypeDataInputs />
     </>
   );
 };

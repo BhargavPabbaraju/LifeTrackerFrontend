@@ -16,7 +16,6 @@ export const PERIOD_TYPE_ORDER = [
 
 export function computeGoalRange({ year, month, week, quarter, periodType }) {
   let startDate, endDate;
-  console.log(year, quarter, month, week);
 
   if (quarter && periodType === PERIOD_TYPES.QUARTERLY) {
     const startMonth = (quarter - 1) * 3 + 1;

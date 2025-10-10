@@ -7,11 +7,11 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-const SelectInput = ({ control, key, config, label }) => (
+const SelectInput = ({ control, fieldKey, config, label }) => (
   <Controller
     control={control}
-    key={key}
-    name={`goalData.${key}`}
+    key={fieldKey}
+    name={`goalData.${fieldKey}`}
     defaultValue={config.default ?? ""}
     rules={{ required: `${label} is required` }}
     render={({ field, fieldState: { error } }) => (

@@ -79,7 +79,7 @@ function Form({
       week: undefined,
       quarter: undefined,
       description: "",
-      goalType: "",
+      goalType: {},
       goalData: {},
       ...initialData,
     },
